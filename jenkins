@@ -1,0 +1,30 @@
+pipeline {
+  agent any
+  
+  environment {
+ 
+    S3_BUCKET_NAME = 'YOUR_S3_BUCKET_NAME'
+  }
+  
+  stages {
+    stage('Build') {
+      steps {
+        // Build the Maven project
+        sh 'mvn clean package'
+      }
+    }
+    
+    stage('Publish') {
+      steps {
+        s3Upload(
+    bucket: "${S3_BUCKET_NAME}",
+    path: './target/*.war',
+    workingDir: './target',
+    includePathPattern: '**/*.war',
+    useIAMRole: false
+)
+
+      }
+    }
+  }
+}
